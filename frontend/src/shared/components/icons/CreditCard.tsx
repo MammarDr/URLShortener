@@ -1,0 +1,18 @@
+export default function Profile({
+  size = 20,
+  className = "fill-theme",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      viewBox="0 -960 960 960"
+      height={size}
+      width={size}
+      className={className}
+    >
+      <path d="M864-696v432q0 29-21.15 50.5T792-192H168q-29 0-50.5-21.5T96-264v-432q0-29 21.5-50.5T168-768h624q29.7 0 50.85 21.5Q864-725 864-696Zm-696 72h624v-72H168v72Zm0 144v216h624v-216H168Zm0 216v-432 432Z" />
+    </svg>
+  );
+}

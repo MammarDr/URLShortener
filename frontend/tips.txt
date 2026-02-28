@@ -1,0 +1,1 @@
+Creating one User Form for login and regestering is okay; but you must change the name of inputs so autoComplete doesn't ruin it
