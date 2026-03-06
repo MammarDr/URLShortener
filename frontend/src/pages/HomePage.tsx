@@ -28,8 +28,10 @@ export default function HomePage() {
           dashboard designed for speed.
         </span>
       </div>
-      <URLInput perPage={5} order="desc" />
-      <URLCard />
+      <div className="w-full space-y-16">
+        <URLInput />
+        <URLCard />
+      </div>
       <Outlet />
       <footer className="mt-10"></footer>
     </main>

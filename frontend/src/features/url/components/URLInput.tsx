@@ -7,27 +7,14 @@ import queryClient from "../../../app/queryClient";
 import { useAuth } from "../../auth/hooks/useAuth";
 import type { ICreateUrlDTO } from "../types";
 import { insertAndshiftPaginatedCache } from "../utils/queryHelpers";
+import { useState } from "react";
 
-export default function URLInput({
-  perPage,
-  order,
-}: {
-  perPage: number;
-  order: "desc" | "asc";
-}) {
+export default function URLInput() {
   const { isAuthenticated } = useAuth();
+  const [inputValue, setInputValue] = useState("");
   const urlMutation = useMutation({
     mutationFn: (variables: ICreateUrlDTO) => createUrl(variables),
     onSuccess: async (response) => {
-      // queryClient.setQueryData(["urls", isAuthenticated], (prevData: any) =>
-      //   !prevData
-      //     ? prevData
-      //     : {
-      //         ...prevData,
-      //         data: [response.data, ...prevData.data],
-      //       },
-      // );
-
       const invalidateCaches = insertAndshiftPaginatedCache(
         queryClient,
         ["urls", isAuthenticated],
@@ -51,7 +38,8 @@ export default function URLInput({
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const url = formData.get("url") as string;
-    urlMutation.mutate({ source: url, title: "x" });
+    setInputValue("");
+    urlMutation.mutate({ source: url, title: "Shortened Url", active: true });
   }
 
   return (
@@ -67,7 +55,9 @@ export default function URLInput({
             name="url"
             id="url"
             autoComplete="off"
-            className="w-full pl-10 text-theme placeholder:text-inherit/20 relative"
+            className="w-full pl-10 text-theme placeholder:text-inherit/20 focus:outline-none"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
           />
           <Link
             size={24}

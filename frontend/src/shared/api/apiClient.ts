@@ -12,7 +12,7 @@ export async function apiClient(
     throw HttpError.Unauthenticated();
   }
 
-  const response = await fetch(url, {
+  const response = await fetch("http://localhost:5203/api/" + url, {
     ...options,
     cache: "no-store",
     headers: {

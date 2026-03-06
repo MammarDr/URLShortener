@@ -21,7 +21,7 @@ export default function UserModal({
   return (
     <div
       onClick={() => navigate("../..")}
-      className="fixed inset-0 w-full h-full flex items-center justify-center bg-black/65 backdrop-blur-sm transition-opacity z-50"
+      className="fixed inset-0 w-full h-full flex items-center justify-center backdrop-blur-lg transition-opacity z-50"
     >
       <UserForm type={formType} />
     </div>

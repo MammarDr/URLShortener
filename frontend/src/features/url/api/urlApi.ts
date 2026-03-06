@@ -3,7 +3,7 @@ import type { ICreateUrlDTO } from "../types";
 
 export async function fetchUrl(id: number) {
   return apiClient(
-    "https://localhost:7254/api/v1/Url/me/" + id,
+    "v1/Url/me/" + id,
     {
       method: "GET",
     },
@@ -16,7 +16,7 @@ export async function fetchUrls(
   order: string,
 ) {
   return apiClient(
-    `https://localhost:7254/api/v1/Url/me?PageSize=${perPage}&PageNumber=${pageNumber}&OrderBy=createdAt ${order}`,
+    `v1/Url/me?PageSize=${perPage}&PageNumber=${pageNumber}&OrderBy=createdAt ${order}`,
     {
       method: "GET",
     },
@@ -31,14 +31,14 @@ export async function createUrl({
   active,
 }: ICreateUrlDTO) {
   return apiClient(
-    "https://localhost:7254/api/v1/Url/me",
+    "v1/Url/me",
     {
       method: "POST",
       body: JSON.stringify({
         Source: source,
         Title: title,
         ShortCode: slug,
-        IsActive: active,
+        isActive: active,
       }),
     },
     true,
@@ -52,14 +52,14 @@ export async function updateUrl(
   active: boolean,
 ) {
   return apiClient(
-    `https://localhost:7254/api/v1/Url/${id}`,
+    `v1/Url/${id}`,
     {
       method: "PUT",
       body: JSON.stringify({
         source,
         title,
         slug,
-        active,
+        isActive: active,
       }),
     },
     true,
@@ -67,7 +67,7 @@ export async function updateUrl(
 }
 export async function deleteUrl(id: string) {
   return apiClient(
-    `https://localhost:7254/api/v1/Url/me/${id}`,
+    `v1/Url/me/${id}`,
     {
       method: "DELETE",
     },

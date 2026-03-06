@@ -1,8 +1,62 @@
+import { useState } from "react";
 import Link from "../../../shared/components/icons/Link";
+import type { IUrl } from "../types";
+import { useNavigate } from "react-router-dom";
 
-export default function URLEditor() {
+function formatNumberWithCommas(num: number | string): string {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatDate(date: Date, formatStr: string): string {
+  if (!date) return "";
+  const pad = (n: number): string => (n < 10 ? `0${n}` : `${n}`);
+  const monthShort = date.toLocaleString("default", { month: "short" });
+  const map: Record<string, string> = {
+    "yyyy": date.getFullYear().toString(),
+    "MMM": monthShort,
+    "MM": pad(date.getMonth() + 1),
+    "dd": pad(date.getDate()),
+    "d": date.getDate().toString(),
+  };
+  // Match longer tokens first to avoid partial matches
+  return formatStr.replace(/yyyy|MMM|MM|dd|d/g, (m) => map[m] ?? m);
+}
+
+function formatDistanceToNow(date: Date, opts?: { addSuffix?: boolean }): string {
+  if (!date) return "";
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const absDiffMs = Math.abs(diffMs);
+  const seconds = Math.floor(absDiffMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  let result: string;
+  if (days > 0) {
+    result = days === 1 ? "1 day" : `${days} days`;
+  } else if (hours > 0) {
+    result = hours === 1 ? "1 hour" : `${hours} hours`;
+  } else if (minutes > 0) {
+    result = minutes === 1 ? "1 minute" : `${minutes} minutes`;
+  } else {
+    return "just now";
+  }
+
+  if (opts?.addSuffix) {
+    result = diffMs > 0 ? `${result} ago` : `in ${result}`;
+  }
+  return result;
+}
+
+export default function URLEditor({url}: {url: IUrl}  ) {
+  const navigate = useNavigate();
+  const [isActive, setIsActive] = useState(url.isActive);
+  const createdAtFormatted = url?.createdAt ? formatDate(new Date(url.createdAt), "MMM d, yyyy") : "-";
+  const lastModifiedRelative = url?.lastModified ? formatDistanceToNow(new Date(url.lastModified), { addSuffix: true }) : "-";
+  const expiresAtValue = url?.expiresAt ? formatDate(new Date(url.expiresAt), "yyyy-MM-dd") : "";
   return (
-    <div className="absolute top-0 right-0 z-50 w-[500px] h-full glass flex flex-col overflow-y-auto">
+    <div className="w-[500px] h-full glass ml-auto overflow-y-auto" onClick={(e) => e.stopPropagation()}>
       <div className="flex flex-col text-theme p-8 space-y-8">
         <div className="flex items-center justify-between border-b-theme/5 border-b-2 pb-4">
           <div className="flex gap-6">
@@ -10,7 +64,7 @@ export default function URLEditor() {
             <div className="flex items-center gap-2 bg-orange-100 border border-primary rounded-xl px-3">
               <span className="animate-pulse size-2 bg-primary rounded-full"></span>
               <span className="text-xs font-semibold text-orange-700 uppercase tracking-wide">
-                Active
+                {isActive ? "Active" : "Archived"}
               </span>
             </div>
           </div>
@@ -19,7 +73,7 @@ export default function URLEditor() {
             height="26px"
             width="26px"
             className="cursor-pointer fill-theme"
-            onClick={() => null}
+            onClick={() => navigate("..")}
           >
             <path d="m291-240-51-51 189-189-189-189 51-51 189 189 189-189 51 51-189 189 189 189-51 51-189-189-189 189Z" />
           </svg>
@@ -33,15 +87,15 @@ export default function URLEditor() {
             </div>
 
             <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" />
+              <input type="checkbox" className="sr-only peer" checked={isActive} onChange={() => setIsActive(!isActive)} />
               <div
-                className="border relative w-12 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-orange-300 dark:bg-gray-600 peer-checked:bg-orange-500
+                className="border relative w-[2.8rem] h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-orange-300 dark:bg-gray-600 peer-checked:bg-orange-500
     after:content-[''] after:absolute after:top-[3px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-transform after:duration-200 peer-checked:after:translate-x-5 peer-checked:after:border-white"
               ></div>
             </label>
           </div>
 
-          <form className="space-y-6">
+          <form onSubmit={() => null} className="space-y-6">
             <div>
               <label
                 htmlFor="title"
@@ -53,11 +107,11 @@ export default function URLEditor() {
                 <input
                   type="text"
                   name="title"
-                  value={"Url Shortener"}
+                  value={url.title}
                   spellCheck={false}
                   autoCorrect="off"
                   autoComplete="off"
-                  className="w-full glass py-2 px-4 font-medium tracking-tight focus:border-primary focus:ring-primary rounded-lg shadow-sm"
+                  className="w-full glass py-4 px-4 text-lg font-medium tracking-tight focus:border-primary focus:ring-primary rounded-lg shadow-sm"
                 />
               </div>
             </div>
@@ -67,15 +121,16 @@ export default function URLEditor() {
                 CUSTOM ALIAS
               </label>
               <div className="rounded-lg flex mt-1">
-                <div className="px-3 text-center content-center bg-primary dark:bg-primary/75 text-orange-50 tracking-wider font-medium rounded-tl-lg rounded-bl-lg">
+                <div className="px-3 text-center content-center bg-primary dark:bg-primary text-orange-50 tracking-wider font-medium rounded-tl-lg rounded-bl-lg">
                   link.sh/
                 </div>
                 <input
                   type="text"
-                  className="w-full glass py-2.5 px-2.5 text-sm font-semibold rounded-tr-lg rounded-br-lg focus:border-primary focus:ring-primary shadow-sm"
+                  className="w-full glass py-4 px-2.5 font-semibold rounded-tr-lg rounded-br-lg focus:border-primary focus:ring-primary shadow-sm"
                   spellCheck={false}
                   autoCorrect="off"
                   autoComplete="off"
+                  value={url.shortCode}
                 />
               </div>
             </div>
@@ -95,7 +150,8 @@ export default function URLEditor() {
                   autoComplete="off"
                   spellCheck={false}
                   autoCorrect="off"
-                  className="w-full glass py-2 pl-12 font-mono tracking-tight rounded-lg placeholder:text-inherit/20 focus:border-primary focus:ring-primary shadow-sm relative"
+                  className="w-full glass py-4 pl-12  pr-4 font-mono tracking-tight rounded-lg placeholder:text-inherit/20 focus:border-primary focus:ring-primary shadow-sm relative"
+                  value={url.source}
                 />
                 <Link
                   size={20}
@@ -117,7 +173,7 @@ export default function URLEditor() {
             <div className="flex justify-between items-center px-4">
               <div>
                 <p className="text-xs font-medium mb-1">Total Clicks</p>
-                <p className="text-3xl font-bold tracking-tight">12,842</p>
+                <p className="text-3xl font-bold tracking-tight">{formatNumberWithCommas(url.visitCount)}</p>
               </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -138,19 +194,19 @@ export default function URLEditor() {
             <h3 className="text-base font-bold tracking-wider">TIME LINE</h3>
           </div>
           <div className="flex justify-between items-center pb-4 border-b border-theme/20">
-            <h3 className="text-sm text-theme/60 font-bold">Create At</h3>
-            <span className="text-sm font-extrabold">Aug 24,2024</span>
+            <h3 className="text-sm text-theme/60 font-bold">Created At</h3>
+            <span className="text-sm font-extrabold">{createdAtFormatted}</span>
           </div>
           <div className="flex justify-between items-center pb-4 border-b border-theme/20">
             <h3 className="text-sm text-theme/60 font-bold">Last Modified</h3>
-            <span className="text-sm font-extrabold">2 hours ago</span>
+            <span className="text-sm font-extrabold">{lastModifiedRelative}</span>
           </div>
           <div>
             <h3 className="text-sm text-theme/60 font-bold mb-4">Expires At</h3>
             <input
               type="date"
-              name=""
-              id=""
+              name="expireAt"
+              value={expiresAtValue}
               className="w-full glass py-4 px-6 rounded-lg focus:border-primary focus:ring-primary"
             />
           </div>
@@ -175,7 +231,7 @@ export default function URLEditor() {
         <button className="w-full rounded-md bg-primary text-white shadow-xl shadow-orange-500/30 hover:shadow-orange-500/40 transition-all delay-75">
           Save Changes
         </button>
-        <button className="px-10 py-3 text-theme rounded-md glass shadow-md">
+        <button className="px-10 py-3 text-theme rounded-md glass shadow-md" onClick={() => navigate("..")}>
           Cancel
         </button>
       </div>

@@ -22,7 +22,7 @@ export default function Paging({
 }) {
   if (totalPages <= 1) return <></>;
   const dispatch = useDispatch();
-  const spanStyle = `text-theme hover:bg-theme/5 text-sm w-10 h-10 place-items-center rounded-xl`;
+  const spanStyle = `flex justify-center text-theme hover:bg-theme/5 text-sm w-10 h-10 place-items-center rounded-xl`;
 
   return (
     <div className="w-fit flex items-center p-2 gap-2.5 glass rounded-xl shadow-lg">

@@ -49,7 +49,7 @@ export default function URLCard() {
 
 export function URLCardError() {
   return (
-    <div className="glass flex flex-col items-center p-12 gap-8 text-center rounded-2xl">
+    <div className="w-full glass flex flex-col items-center p-12 gap-8 text-center rounded-2xl">
       <div className="p-4 bg-orange-100 dark:bg-orange-900/20 rounded-full">
         <Linkoff size={34} className="fill-primary" />
       </div>

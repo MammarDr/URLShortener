@@ -79,7 +79,7 @@ export default function UserForm({ type }: { type: "login" | "signup" }) {
 
   return (
     <div
-      className="w-[400px] p-10 glass rounded-xl shadow-lg "
+      className="w-[min(600px,100%)] p-10 glass rounded-xl shadow-lg "
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex items-center justify-between mb-5">
@@ -117,7 +117,7 @@ export default function UserForm({ type }: { type: "login" | "signup" }) {
       <div className="flex justify-evenly glass rounded-xl p-1 mb-8 shadow-lg">
         <button
           onClick={() => navigate("../login")}
-          className={`rounded-xl w-1/2 p-1 hover:transition-colors ${
+          className={`rounded-xl w-1/2 p-2 hover:transition-colors ${
             type === "login"
               ? "bg-primary text-white font-bold"
               : "text-theme/80 hover:text-theme/100"
@@ -127,7 +127,7 @@ export default function UserForm({ type }: { type: "login" | "signup" }) {
         </button>
         <button
           onClick={() => navigate("../signup")}
-          className={`rounded-xl w-1/2 p-1 hover:transition-colors ${
+          className={`rounded-xl w-1/2 p-2 hover:transition-colors ${
             type === "signup"
               ? "bg-primary text-white font-bold"
               : "text-theme/80 hover:text-theme/100"

@@ -13,10 +13,12 @@ export default function URLItem({
   url,
   isDeleting,
   onDelete,
+  onEdit
 }: {
   url: IUrl;
   isDeleting: boolean;
   onDelete: (id: string) => void;
+  onEdit: (url: IUrl) => void;
 }) {
   const [showCopied, setShowCopied] = useState(false);
   const [isBigScreen, setIsBigScreen] = useState(window.innerWidth > 600);
@@ -55,8 +57,6 @@ export default function URLItem({
       setShowCopied(false);
     }, 1000);
   }
-
-  function handleEdit() {}
 
   function handleRmove() {
     onDelete(url.id);
@@ -103,10 +103,10 @@ export default function URLItem({
               </div>
             )}
           </label>
-          <label className="cursor-pointer" title="Edit" onClick={handleEdit}>
+          <label className="cursor-pointer" title="Edit" onClick={() => onEdit(url)}>
             <Edit className="fill-slate-700/80 dark:fill-zinc-500 pointer-events-none" />
           </label>
-          <div className="h-5 p-[0.25px] bg-theme/20"></div>
+          <div className="h-5 p-[1.25px] bg-theme/20"></div>
           <label
             onClick={handleRmove}
             title="Delete"
@@ -116,7 +116,7 @@ export default function URLItem({
           </label>
         </div>
       ) : (
-        <Dot onClick={handleEdit} />
+        <Dot onClick={() => onEdit(url)} />
       )}
     </div>
   );

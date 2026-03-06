@@ -15,7 +15,7 @@ import { shiftPaginatedCache } from "../utils/queryHelpers";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../app/store";
 import { useEffect } from "react";
-import URLEditor from "./URLEditor";
+import { useNavigate } from "react-router-dom";
 
 export default function URLItems({
   perPage,
@@ -24,6 +24,7 @@ export default function URLItems({
   perPage: number;
   order: string;
 }) {
+  const navigate = useNavigate();
   const { currentPage } = useSelector((state: RootState) => state.url);
   const { isAuthenticated } = useAuth();
   const deleteMutation = useMutation({
@@ -118,6 +119,10 @@ export default function URLItems({
       .catch(() => null);
   }, [currentPage]);
 
+  const onEdit = (url: IUrl) => {
+    navigate("/edit", { state: { url } });
+  }
+
   const shouldShowSkeleton = isFetching && isFetchedAfterMount && isStale;
 
   return (
@@ -137,6 +142,7 @@ export default function URLItems({
                 url={item}
                 isDeleting={deletingIds.includes(item.id)}
                 onDelete={() => deleteMutation.mutate(item.id)}
+                onEdit={onEdit}
               />
             ))}
           </div>
@@ -150,9 +156,10 @@ export default function URLItems({
               />
             </div>
           )}
-          <URLEditor />
+          {}
         </>
       )}
     </>
   );
 }
+

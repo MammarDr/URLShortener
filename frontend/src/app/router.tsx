@@ -4,6 +4,7 @@ import HomePage from "../pages/HomePage.tsx";
 import UserModal from "../pages/UserModal.tsx";
 import ErrorPage from "../pages/404.tsx";
 import PublicOnlyRoute from "../features/auth/guards/PublicOnlyRoute.tsx";
+import UrlModal from "../pages/UrlModal.tsx";
 
 export default createBrowserRouter([
   {
@@ -28,6 +29,11 @@ export default createBrowserRouter([
               },
             ],
           },
+          {
+            path: "edit",
+            element: <UrlModal  />
+
+          }
         ],
       },
       {
